@@ -34,7 +34,7 @@ function eliminar(month, year) {
       year +
       " completo?"
   );
-  if (opcion == true) {
+  if (opcion === true) {
     fetch(`/payment/delete_all/${month}/${year}`, { method: "DELETE" })
       .then((res) => res.json())
       .then((data) => {

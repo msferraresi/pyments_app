@@ -37,6 +37,9 @@ const PaymentsMonthCreate = (props) => {
   const [payment, cambiarPayment] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [paymentsPerPage] = useState(10);
+  let [month, setMonth] = useState(0);
+  let [year, setYear] = useState(0);
+
 
   const getStates = () => {
     fetch("/state/all")
@@ -85,7 +88,7 @@ const PaymentsMonthCreate = (props) => {
 
   function eliminar(result, payment) {
     cambiarEstadoModal2(!estadoModal2);
-    if (result == true) {
+    if (result === true) {
       fetch(`/payment/delete/${payment.id}`, { method: "DELETE" })
         .then((res) => res.json())
         .then((data) => {
@@ -99,18 +102,24 @@ const PaymentsMonthCreate = (props) => {
 
   useEffect(() => {
     if (propsData.month !== 0 && propsData.year !== 0) {
-      getPayments(propsData.month, propsData.year);
+      setMonth(propsData.month);
+      setYear(propsData.year);
+      getPayments(month, year);
     }
     getStates();
     getConcepts();
     getCurrencies();
     getTypePayments();
-  }, []);
+  }, [month, propsData.month, propsData.year, year]);
 
   const onChangeDate = (date) => {
     let data = date.target.value;
     const myArray = data.split("-");
+    setMonth(myArray[1]);
+    setYear(myArray[0]);
+  
     getPayments(myArray[1], myArray[0]);
+
   };
 
   async function insertPayment() {
@@ -210,7 +219,7 @@ const PaymentsMonthCreate = (props) => {
 
   const indexOfLastPayment = currentPage * paymentsPerPage;
   const indexOfFirstPayment = indexOfLastPayment - paymentsPerPage;
-  const currentPayments =  payments ? payments.slice(indexOfFirstPayment, indexOfLastPayment) : "";
+  let currentPayments =  payments ? payments.slice(indexOfFirstPayment, indexOfLastPayment) : "";
 
   const paginate = (pageNumber) => {
     setCurrentPage(pageNumber);
@@ -249,7 +258,7 @@ const PaymentsMonthCreate = (props) => {
                 propsData.year + "-" + String(propsData.month).padStart(2, "0")
               }
               disabled={
-                typeof payments !== "undefined" && payments.length > 0
+                payments && payments.length > 0
                   ? true
                   : false
               }
@@ -265,8 +274,8 @@ const PaymentsMonthCreate = (props) => {
           titulo="Crear Pago"
         >
           <form id="formCreate">
-            <input id="month" type="text" value={propsData.month} hidden />
-            <input id="year" type="text" value={propsData.year} hidden />
+            <input id="month" type="text" value={month}  />
+            <input id="year" type="text" value={year}  />
             <div className="row form-group mt-3">
               <div className="col-sm-2 d-flex align-items-center">
                 <label htmlFor="status">Estado: </label>
@@ -366,8 +375,8 @@ const PaymentsMonthCreate = (props) => {
                   onKeyPress={(event) => {
                     return (
                       (event.charCode >= 48 && event.charCode <= 57) ||
-                      event.charCode == 44 ||
-                      event.charCode == 0
+                      event.charCode === 44 ||
+                      event.charCode === 0
                     );
                   }}
                 />
@@ -390,8 +399,8 @@ const PaymentsMonthCreate = (props) => {
                   onKeyPress={(event) => {
                     return (
                       (event.charCode >= 48 && event.charCode <= 57) ||
-                      event.charCode == 44 ||
-                      event.charCode == 0
+                      event.charCode === 44 ||
+                      event.charCode === 0
                     );
                   }}
                 />
@@ -414,8 +423,8 @@ const PaymentsMonthCreate = (props) => {
                   onKeyPress={(event) => {
                     return (
                       (event.charCode >= 48 && event.charCode <= 57) ||
-                      event.charCode == 44 ||
-                      event.charCode == 0
+                      event.charCode === 44 ||
+                      event.charCode === 0
                     );
                   }}
                 />
@@ -630,8 +639,8 @@ const PaymentsMonthCreate = (props) => {
                   onKeyPress={(event) => {
                     return (
                       (event.charCode >= 48 && event.charCode <= 57) ||
-                      event.charCode == 44 ||
-                      event.charCode == 0
+                      event.charCode === 44 ||
+                      event.charCode === 0
                     );
                   }}
                 />
@@ -654,8 +663,8 @@ const PaymentsMonthCreate = (props) => {
                   onKeyPress={(event) => {
                     return (
                       (event.charCode >= 48 && event.charCode <= 57) ||
-                      event.charCode == 44 ||
-                      event.charCode == 0
+                      event.charCode === 44 ||
+                      event.charCode === 0
                     );
                   }}
                 />
@@ -678,8 +687,8 @@ const PaymentsMonthCreate = (props) => {
                   onKeyPress={(event) => {
                     return (
                       (event.charCode >= 48 && event.charCode <= 57) ||
-                      event.charCode == 44 ||
-                      event.charCode == 0
+                      event.charCode === 44 ||
+                      event.charCode === 0
                     );
                   }}
                 />
@@ -722,7 +731,7 @@ const PaymentsMonthCreate = (props) => {
         </ModalVista>
         <br />
 
-        <PayPagination paymentsPerPage={paymentsPerPage} totalPayments={payments.length} paginate={paginate} />
+        <PayPagination paymentsPerPage={paymentsPerPage} totalPayments={ payments ? payments.length : 0} paginate={paginate} />
 
         <div className="table-responsive-sm">
           <Table className="table table-hover table-sm">
@@ -755,7 +764,7 @@ const PaymentsMonthCreate = (props) => {
               </tr>
             </thead>
             <tbody>
-              {typeof payments !== "undefined" && payments.length > 0 && payments.message !== "No payments found"
+              { payments && payments.length > 0 && payments.message !== "No payments found"
                 ? currentPayments.map((payment, index) => (
                     <tr
                       key={index}
