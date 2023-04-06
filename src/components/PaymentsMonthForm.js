@@ -274,8 +274,8 @@ const PaymentsMonthCreate = (props) => {
           titulo="Crear Pago"
         >
           <form id="formCreate">
-            <input id="month" type="text" value={month}  />
-            <input id="year" type="text" value={year}  />
+            <input id="month" type="text" value={month} hidden />
+            <input id="year" type="text" value={year} hidden />
             <div className="row form-group mt-3">
               <div className="col-sm-2 d-flex align-items-center">
                 <label htmlFor="status">Estado: </label>
